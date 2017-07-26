@@ -37,8 +37,32 @@ function ecraserAncienneCommande(sheetBabac) {
   }
 }
 
+function entrerFeuilleBabac() {
+  for (row in range) {
+    row = range[row]
+    num_babac = row[NUM_BABAC_COL];
+    fixProductNumbers(num_babac);
+
+    nb_paquets = row[QUANTITE_COL];
+    nb_par_paquet = row[PAQUETS_DE_COL];
+    nom = row[NOM_COL] + " " + row[REFERENCE_COL] + " " + row[CARACTERISTIQUE_COL];
+
+    if (!num_babac)
+      continue;
+
+    if (!(num_babac in commande)) {
+      commande[num_babac] = {};
+      commande[num_babac]['quantite'] = 0;
+      commande[num_babac]['nb_par_paquet'] = nb_par_paquet;
+      commande[num_babac]['nom'] = nom;
+    }
+
+    commande[num_babac]['quantite'] += nb_paquets;
+  }
+}
+
 function listePiecesAtelier(sheetAtelier) {
-  /* Déterminer le contenu de chaque colonne */
+  /* Déterminer le contenu de chaque colonne pour feuille Atelier */
   NUM_BICIKLO_COL = 0;
   NUM_BABAC_COL = 1;
   CATEGORIE_COL = 2;
@@ -49,11 +73,15 @@ function listePiecesAtelier(sheetAtelier) {
   PAQUETS_DE_COL = 7;
   QUANTITE_COL = 8;
 
+  /* extraire les données de la feuille */
   range = sheetAtelier.getSheetValues(2, 1, -1, -1);
 
+  /* mettre dans feuille Babac
+  entrerFeuilleBabac(); */
   for (row in range) {
     row = range[row]
     num_babac = row[NUM_BABAC_COL];
+    fixProductNumbers(num_babac);
 
     nb_paquets = row[QUANTITE_COL];
     nb_par_paquet = row[PAQUETS_DE_COL];
@@ -63,7 +91,40 @@ function listePiecesAtelier(sheetAtelier) {
       continue;
 
     if (!(num_babac in commande)) {
-      fixProductNumbers(num_babac);
+      commande[num_babac] = {};
+      commande[num_babac]['quantite'] = 0;
+      commande[num_babac]['nb_par_paquet'] = nb_par_paquet;
+      commande[num_babac]['nom'] = nom;
+    }
+
+    commande[num_babac]['quantite'] += nb_paquets;
+  }
+}
+
+function listePiecesPerso(sheetPerso) {
+  /* Déterminer le contenu de chaque colonne pour feuille Perso */
+  PERSO_NUM_BABAC_COL = 1;
+  PERSO_NOM_COL = 2;
+  PERSO_PAQUETS_DE_COL = 4;
+  PERSO_QUANTITE_COL = 5;
+
+  /* extraire les données de la feuille */
+  range = sheetPerso.getSheetValues(2, 1, -1, -1);
+
+  /* mettre dans feuille Babac
+  entrerFeuilleBabac(); */
+  for (row in range) {
+    row = range[row]
+    num_babac = row[PERSO_NUM_BABAC_COL];
+    fixProductNumbers(num_babac);
+    nb_paquets = row[PERSO_QUANTITE_COL];
+    nb_par_paquet = row[PERSO_PAQUETS_DE_COL];
+    nom = row[PERSO_NOM_COL];
+
+    if (!num_babac)
+      continue;
+
+    if (!(num_babac in commande)) {
       commande[num_babac] = {};
       commande[num_babac]['quantite'] = 0;
       commande[num_babac]['nb_par_paquet'] = nb_par_paquet;
@@ -93,9 +154,9 @@ function generateBabac() {
   commande = {};
 
   listePiecesAtelier(sheetAtelier);
-/*  listePiecesPerso(sheetPerso);*/
+  listePiecesPerso(sheetPerso);
 
-  /* Ajouter pièces perso */
+  /* Ajouter pièces perso
   range = sheetPerso.getSheetValues(2, 1, -1, -1);
 
   PERSO_NUM_BABAC_COL = 1;
@@ -106,6 +167,7 @@ function generateBabac() {
   for (row in range) {
     row = range[row]
     num_babac = row[PERSO_NUM_BABAC_COL];
+    fixProductNumbers(num_babac);
     nb_paquets = row[PERSO_QUANTITE_COL];
     nb_par_paquet = row[PERSO_PAQUETS_DE_COL];
     nom = row[PERSO_NOM_COL];
@@ -114,7 +176,6 @@ function generateBabac() {
       continue;
 
     if (!(num_babac in commande)) {
-      fixProductNumbers(num_babac);
       commande[num_babac] = {};
       commande[num_babac]['quantite'] = 0;
       commande[num_babac]['nb_par_paquet'] = nb_par_paquet;
@@ -123,8 +184,9 @@ function generateBabac() {
 
     commande[num_babac]['quantite'] += nb_paquets;
   }
+*/
 
-
+  /* Formater la feuille Babac */
   row = sheetBabac.getRange(1, 1, 1, 3);
   row.setValues([["# Babac", "Nom", "Quantité"]]);
   row.setFontWeight("bold");
